@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, maximum-scale=0.9, user-scalable=0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/draw.js"></script> 
+    <script src="js/sketchPad.js"></script> 
+</head>
+<body>
+    <div id="content">
+        <h1>Data Creator</h1>
+        <div>
+            <input id="student" type="text" placeholder="type your name"/>
+            <span id="instruction"></span>
+            <button id="advancedBtn" onclick="start(); ">START</button>
+        </div>
+        <br>
+            <div class="sketchPadContainer" style="visibility: hidden;">
+            </div>
+    </div>  
+
+    <script>
+        let index = 0;
+        const labels = ["car", "fish", "house", "tree", "bicycle", "gitar", "pencil", "clock"];
+
+        data = {
+            student: null,
+            session: new Date().getTime(),
+            drawings:{}
+        };  
+
+        const sketchPad = 
+            new SketchPad(sketchPadContainer);
+
+        function start(){
+            if (student.value){
+                alert("Please tupe your name!");
+                return;
+            }
+            data.student = student.value;
+            student.style.display = "none";
+            sketchPadContainer.style.visibility = "visible";
+
+            const label = labels [index];
+            instruction.innerHTML = "Please draw a "+label;
+            advanceBtn.innerHTML="NEXT";
+            advanceBtn.onclick = next;
+        }
+
+        function next(){
+            if(sketchPad.path.lenght == 0){
+                alert("Draw something!");
+                return;
+            }
+            const label = labels [index];
+            data.drawings[label] = sketchPad.path;
+            sketchPad.reset();
+            index++;  
+            if (index < labels.length){
+                const nextLabel = labels [index];
+                instruction.innerHTML = "Please draw a "+nextLabel; 
+            }else{
+                sketchPadContainer.style.visibility = "hidden"; 
+                instruction.innerHTML = "Thanks";
+                advanceBtn.innerHTML="SAVE";
+                advanceBtn.onclick=save;
+
+            }
+        }
+
+        function save(){
+            advanceBtn.style.display = "none";
+            instruction.innerHTML = "Take your dowloaded file and place it alongside the others in the dataset";
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data)));
+
+            const fileName = data.session + ".json";
+            element.setAttribute('download', fileName);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            document.click();
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+</html>
